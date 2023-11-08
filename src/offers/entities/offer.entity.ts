@@ -6,8 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { Length, IsUrl, IsPositive } from 'class-validator';
-import { User } from 'src/users/entities/user.entity';
+import { IsPositive } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
