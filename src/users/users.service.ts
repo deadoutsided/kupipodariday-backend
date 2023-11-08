@@ -19,15 +19,36 @@ export class UsersService {
     return `This action returns all users`;
   } */
 
-  findOne(username: string) {
+  findOneByUsername(username: string) {
     return this.userRepository.findOneBy({
       username,
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.save(updateUserDto);
+  findOneById(id: number) {
+    return this.userRepository.findOneBy({
+      id,
+    });
   }
+
+  updateById(id: number, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update({ id }, updateUserDto);
+  }
+
+  findUserWithWishes(id: number) {
+    return this.userRepository.find({
+      where: {
+        id,
+      },
+      relations: {
+        wishes: true,
+      },
+    });
+  }
+
+  /* update(id: number, updateUserDto: UpdateUserDto) {
+    return this.userRepository.update({ id }, updateUserDto);
+  } */
 
   /* remove(id: number) {
     return this.userRepository.remove;
