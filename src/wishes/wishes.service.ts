@@ -11,23 +11,27 @@ export class WishesService {
     @InjectRepository(Wish)
     private wishRepository: Repository<Wish>,
   ) {}
-  create(createWishDto: CreateWishDto) {
-    return this.wishRepository.save(createWishDto);
+  async create(createWishDto: CreateWishDto) {
+    const newWish = await this.wishRepository.save(createWishDto);
+    return newWish;
   }
 
   /* findAll() {
     return `This action returns all wishes`;
   } */
 
-  findOne(id: number) {
-    return this.wishRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const wish = await this.wishRepository.findOneBy({ id });
+    return wish;
   }
 
-  updateById(id: number, updateWishDto: UpdateWishDto) {
-    return this.wishRepository.update({ id }, updateWishDto);
+  async updateById(id: number, updateWishDto: UpdateWishDto) {
+    const updatedWish = await this.wishRepository.update({ id }, updateWishDto);
+    return updatedWish;
   }
 
-  delete(id: number) {
-    return this.wishRepository.delete(id);
+  async delete(id: number) {
+    const deletedWish = await this.wishRepository.delete(id);
+    return deletedWish;
   }
 }

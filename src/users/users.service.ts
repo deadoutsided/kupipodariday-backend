@@ -11,32 +11,34 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return this.userRepository.save(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const newUser = await this.userRepository.save(createUserDto);
+    return newUser;
   }
 
   /* findAll() {
     return `This action returns all users`;
   } */
 
-  findOneByUsername(username: string) {
-    return this.userRepository.findOneBy({
+  async findOneByUsername(username: string) {
+    const user = await this.userRepository.findOneBy({
       username,
     });
+    return user;
   }
 
-  findOneById(id: number) {
-    return this.userRepository.findOneBy({
-      id,
-    });
+  async findOneById(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    return user;
   }
 
-  updateById(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update({ id }, updateUserDto);
+  async updateById(id: number, updateUserDto: UpdateUserDto) {
+    const updatedUser = await this.userRepository.update({ id }, updateUserDto);
+    return updatedUser;
   }
 
-  findUserWithWishes(id: number) {
-    return this.userRepository.find({
+  async findUserWithWishes(id: number) {
+    const userWithWishes = await this.userRepository.find({
       where: {
         id,
       },
@@ -44,6 +46,7 @@ export class UsersService {
         wishes: true,
       },
     });
+    return userWithWishes;
   }
 
   /* update(id: number, updateUserDto: UpdateUserDto) {

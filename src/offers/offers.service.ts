@@ -10,16 +10,19 @@ export class OffersService {
     @InjectRepository(Offer)
     private offerRepository: Repository<Offer>,
   ) {}
-  create(createOfferDto: CreateOfferDto) {
-    return this.offerRepository.save(createOfferDto);
+  async create(createOfferDto: CreateOfferDto) {
+    const newOffer = await this.offerRepository.save(createOfferDto);
+    return newOffer;
   }
 
-  findAll() {
-    return this.offerRepository.find();
+  async findAll() {
+    const allWishes = await this.offerRepository.find();
+    return allWishes;
   }
 
-  findOne(id: number) {
-    return this.offerRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const offer = await this.offerRepository.findOneBy({ id });
+    return offer;
   }
   /*   update(id: number, updateOfferDto: UpdateOfferDto) {
     return `This action updates a #${id} offer`;

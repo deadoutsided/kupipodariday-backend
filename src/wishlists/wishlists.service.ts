@@ -11,23 +11,31 @@ export class WishlistsService {
     @InjectRepository(Wishlist)
     private wishlistRepository: Repository<Wishlist>,
   ) {}
-  create(createWishlistDto: CreateWishlistDto) {
-    return this.wishlistRepository.save(createWishlistDto);
+  async create(createWishlistDto: CreateWishlistDto) {
+    const newWishlist = await this.wishlistRepository.save(createWishlistDto);
+    return newWishlist;
   }
 
-  findAll() {
-    return this.wishlistRepository.find();
+  async findAll() {
+    const allWishlists = await this.wishlistRepository.find();
+    return allWishlists;
   }
 
-  findOne(id: number) {
-    return this.wishlistRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const wishlist = await this.wishlistRepository.findOneBy({ id });
+    return wishlist;
   }
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return this.wishlistRepository.update({ id }, updateWishlistDto);
+  async update(id: number, updateWishlistDto: UpdateWishlistDto) {
+    const updatedWishlist = await this.wishlistRepository.update(
+      { id },
+      updateWishlistDto,
+    );
+    return updatedWishlist;
   }
 
-  remove(id: number) {
-    return this.wishlistRepository.delete({ id });
+  async remove(id: number) {
+    const deletedWishlist = await this.wishlistRepository.delete({ id });
+    return deletedWishlist;
   }
 }
