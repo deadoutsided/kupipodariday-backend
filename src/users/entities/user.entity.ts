@@ -22,7 +22,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   @IsNotEmpty()
   @Length(3, 64)
   username: string;
