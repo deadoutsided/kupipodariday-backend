@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +24,19 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtGuard)
+  @Get('/me')
+  findSelf(@Req() req): UserProfileResponseDto {
+    return req.user;
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch('/me')
+  async updateSelf(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    console.log(req.user);
+    return await this.usersService.updateById(req.user.id, updateUserDto);
+  }
+
   @Get('/:username')
   async findByUsername(@Param('username') username: string) {
     const user = await this.usersService.findOneByUsername(username);
@@ -27,23 +44,8 @@ export class UsersController {
     return user;
   }
 
-  /* @Get()
-  findAll() {
-    return this.usersService.findAll();
-  } */
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOneById(+id);
   }
-
-  /* @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  } */
-
-  /* @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  } */
 }

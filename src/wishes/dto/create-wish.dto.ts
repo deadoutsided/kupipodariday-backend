@@ -1,4 +1,13 @@
-import { IsUrl, Length, IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsUrl,
+  Length,
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 
 export class CreateWishDto {
   @IsString()
@@ -15,9 +24,13 @@ export class CreateWishDto {
   image: string;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   price: number;
 
   @IsNotEmpty()
   @Length(1, 1024)
   description: string;
+
+  @IsOptional()
+  owner: User;
 }

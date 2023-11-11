@@ -13,17 +13,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.jwt_secret,
-      //secretOrKey: this.configService.get<string>('jwt_secret'), calls a ts error 17009
+      //secretOrKey: this.configService.get<string>('jwt_secret'), //calls a ts error 17009
     });
   }
 
   async validate(jwtPayload: { sub: number }) {
-    const user = this.usersServise.findOneById(jwtPayload.sub);
+    const user = await this.usersServise.findOneById(jwtPayload.sub);
 
     if (!user) {
       throw new UnauthorizedException();
     }
-
+    delete user.password;
     return user;
   }
 }

@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -29,8 +30,12 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-
+    let user;
+    try {
+      user = await this.usersService.create(createUserDto);
+    } catch (e) {
+      return new BadRequestException('email or username already exists');
+    }
     return this.authService.auth(user);
   }
 }

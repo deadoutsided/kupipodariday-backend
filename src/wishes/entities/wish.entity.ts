@@ -10,6 +10,7 @@ import {
 import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
+import { ColumnDecimalTransformer } from 'src/transformer/transformer';
 
 @Entity()
 export class Wish {
@@ -34,10 +35,21 @@ export class Wish {
   @IsUrl()
   image: string;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: new ColumnDecimalTransformer(),
+  })
   price: number;
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    default: 0,
+    transformer: new ColumnDecimalTransformer(),
+  })
   raised: number;
 
   @ManyToOne(() => User, (user) => user.wishes)

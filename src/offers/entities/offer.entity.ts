@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { IsPositive } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { ColumnDecimalTransformer } from 'src/transformer/transformer';
 
 @Entity()
 export class Offer {
@@ -29,7 +30,12 @@ export class Offer {
   //@Column()
   //item: Wish; //many to one
 
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    transformer: new ColumnDecimalTransformer(),
+  })
   amount: number;
 
   @Column({ type: 'bool', default: true })
