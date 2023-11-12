@@ -1,11 +1,15 @@
 import {
   IsUrl,
   Length,
-  IsNumber,
   IsNotEmpty,
   IsString,
-  Min,
+  IsObject,
+  IsNumber,
+  IsOptional,
 } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 export class CreateWishlistDto {
   @IsString()
@@ -17,7 +21,19 @@ export class CreateWishlistDto {
   @IsUrl()
   image: string;
 
+  /* @IsNumber({}, { each: true })
+  itemsId: number[];  workd ver*/
+
+  itemsId?: Wish[];
+
+  /* @IsOptional()
+  @IsObject({ each: true })
+  items?: WishPartial[];  right ver*/
   @IsNumber({}, { each: true })
-  @Min(1, { each: true })
-  itemsId: number[];
+  items: number[];
+
+  owner?: User;
+
+  @IsNumber()
+  id?: number;
 }

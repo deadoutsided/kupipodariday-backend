@@ -4,15 +4,16 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   ManyToOne,
-  ManyToMany,
+  OneToMany,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import { Length, IsUrl } from 'class-validator';
+import { Length, IsUrl, IsNumber, IsObject, IsOptional } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
-import { Wish } from 'src/wishes/entities/wish.entity';
 import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
 export class Wishlist {
@@ -29,7 +30,7 @@ export class Wishlist {
   @Length(1, 250)
   name: string;
 
-  @Column()
+  @Column({ default: 'some-wishlist' })
   @Length(0, 1500)
   description: string;
 
@@ -37,14 +38,16 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  /* @OneToMany(() => Wish, (wish) => wish.id)
-  @JoinColumn()
-  items: Wish[]; */
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
+  @JoinTable()
+  itemsId: Wish[];
   //@Column()
   //items: Wish[]; //one to many
 
+  /* @IsOptional()
   @Column({ type: 'json' })
-  items: WishPartial[];
+  @IsObject({ each: true })
+  items: WishPartial[]; */
 
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;

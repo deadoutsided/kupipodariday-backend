@@ -1,11 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
 import { UserProfileResponseDto } from 'src/users/dto/user-profile-response.dto';
-import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -22,9 +25,20 @@ export class WishesService {
     return newWish;
   }
 
-  /* findAll() {
-    return `This action returns all wishes`;
-  } */
+  async findAll(options) {
+    return await this.wishRepository.find(options);
+  }
+
+  async findWithOffers(id: number) {
+    return await this.wishRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        offers: true,
+      },
+    });
+  }
 
   async findOne(id: number) {
     const wish = await this.wishRepository.findOneBy({ id });
@@ -49,26 +63,37 @@ export class WishesService {
     user: UserProfileResponseDto,
   ) {
     const wish = await this.findOneWithOwner(id);
+    const wishWithOffer = await this.findOneWithOwner(id);
+    if (updateWishDto.price && wishWithOffer.offers.length !== 0) {
+      return new BadRequestException(
+        'You cant change price of wish, that already have offers',
+      );
+    }
     if (wish.owner.id === user.id) {
-      await this.wishRepository.update({ id }, updateWishDto);
+      await this.updateById(id, updateWishDto);
       return this.findOne(id);
     }
     //const updatedWish = await this.wishRepository.update({ id }, updateWishDto);
     return new UnauthorizedException();
   }
 
-  async delete(id: number, user: UserProfileResponseDto) {
+  async delete(id: number) {
+    return await this.wishRepository.delete(id);
+  }
+
+  async deleteVerified(id: number, user: UserProfileResponseDto) {
     const wish = await this.findOneWithOwner(id);
     //console.log(wish);
     if (wish.owner.id === user.id) {
-      return this.wishRepository.delete(id);
+      await this.delete(id);
+      return await this.findOne(id);
     } else return new UnauthorizedException();
     //const deletedWish = await this.wishRepository.delete(id);
     //return deletedWish;
   }
 
   async copy(id: number, user: UserProfileResponseDto) {
-    const copyingWish = await this.wishRepository.findOneBy({ id });
+    const copyingWish = await this.findOne(id);
     const copyingUser = await this.usersService.findOneById(user.id);
     const copied: CreateWishDto = {
       name: copyingWish.name,
@@ -79,7 +104,7 @@ export class WishesService {
       owner: copyingUser, //as i understand, here i should inject usersRepository and find copyind user to place him here
     };
 
-    return this.wishRepository.create(copied);
+    return this.create(copied);
   }
 
   async findTop() {

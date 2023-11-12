@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -56,7 +55,13 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req) {
-    return this.wishesService.delete(+id, req.user);
+    return this.wishesService.deleteVerified(+id, req.user);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('/shi/:id')
+  async findWithOffer(@Param('id') id: string) {
+    return this.wishesService.findWithOffers(+id);
   }
 
   @UseGuards(JwtGuard)

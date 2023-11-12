@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
-import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,6 +28,7 @@ export class UsersService {
 
   async findOneById(id: number) {
     const user = await this.userRepository.findOneBy({ id });
+    delete user.password;
     return user;
   }
 
@@ -39,7 +39,7 @@ export class UsersService {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-    const updatedUser = await this.userRepository.update({ id }, updateUserDto);
+    await this.userRepository.update({ id }, updateUserDto);
     const updated = await this.findOneById(id);
     delete updated.password;
     return updated;

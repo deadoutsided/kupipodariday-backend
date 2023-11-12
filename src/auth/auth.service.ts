@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -18,12 +18,11 @@ export class AuthService {
 
   async validatePassword(username: string, password: string) {
     const user = await this.usersService.findOneByUsername(username);
-    /* В идеальном случае пароль обязательно должен быть захэширован */
     const hashesCompare = user
       ? await bcrypt.compare(password, user.password)
       : false;
     if (user && hashesCompare) {
-      /* Исключаем пароль из результата */
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
 
       return result;

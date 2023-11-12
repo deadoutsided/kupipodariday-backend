@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
@@ -68,8 +69,9 @@ export class Wish {
   //@Column()
   //offers: Offer[]; //one to many(one wish can have many offers)
 
-  /* @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
-  wishlist: Wishlist; */
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.itemsId)
+  //@JoinTable()
+  wishlists: Wishlist[];
 
   @Column({ type: 'integer', default: 0 })
   copied: number;

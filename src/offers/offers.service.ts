@@ -7,7 +7,6 @@ import { CreateOfferDto } from './dto/create-offer.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
-import { Wish } from 'src/wishes/entities/wish.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
 

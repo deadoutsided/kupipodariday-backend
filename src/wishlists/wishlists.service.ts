@@ -1,23 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from './entities/wishlist.entity';
+import { WishesService } from 'src/wishes/wishes.service';
+import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
     private wishlistRepository: Repository<Wishlist>,
+    private wishService: WishesService,
+    private usersService: UsersService,
   ) {}
-  async create(createWishlistDto: CreateWishlistDto) {
-    const newWishlist = await this.wishlistRepository.save(createWishlistDto);
+
+  async create(createWishlistDto: CreateWishlistDto, user) {
+    /* const wishesIds = createWishlistDto.itemsId.map((wishId) => {
+      return { id: wishId };
+    });
+    createWishlistDto.items = await this.wishService.findAll({
+      where: wishesIds,
+    });
+    console.log(createWishlistDto.items);
+    delete createWishlistDto.itemsId; */
+    createWishlistDto.owner = await this.usersService.findOneById(user.id);
+    const wishesIds = createWishlistDto.items.map((wishId) => {
+      return { id: wishId };
+    });
+    createWishlistDto.itemsId = await this.wishService.findAll({
+      where: wishesIds,
+    });
+    const newWishlist = await this.wishlistRepository.save(
+      createWishlistDto as any,
+    );
+    //return await this.wishlistRepository.find();
     return newWishlist;
   }
 
   async findAll() {
-    const allWishlists = await this.wishlistRepository.find();
+    const allWishlists = await this.wishlistRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    return allWishlists;
+  }
+
+  async findAllWithOwners() {
+    const allWishlists = await this.wishlistRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: {
+        owner: true,
+      },
+    });
+    allWishlists.forEach((list) => delete list.owner.password);
     return allWishlists;
   }
 
@@ -27,9 +68,19 @@ export class WishlistsService {
   }
 
   async update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    const updatedWishlist = await this.wishlistRepository.update(
-      { id },
-      updateWishlistDto,
+    if (updateWishlistDto.items) {
+      const wishesIds = updateWishlistDto.items.map((wishId) => {
+        return { id: wishId };
+      });
+      updateWishlistDto.itemsId = await this.wishService.findAll({
+        where: wishesIds,
+      });
+      console.log(updateWishlistDto.items);
+      delete updateWishlistDto.items;
+    }
+    updateWishlistDto.id = id;
+    const updatedWishlist = await this.wishlistRepository.save(
+      updateWishlistDto as any,
     );
     return updatedWishlist;
   }
@@ -37,5 +88,35 @@ export class WishlistsService {
   async remove(id: number) {
     const deletedWishlist = await this.wishlistRepository.delete({ id });
     return deletedWishlist;
+  }
+
+  async findOneWhithOwner(id: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        owner: true,
+      },
+    });
+    delete wishlist.owner.password;
+    return wishlist;
+  }
+
+  async updateVerified(id: number, updateWishlistDto: UpdateWishlistDto, user) {
+    const wishlist = await this.findOneWhithOwner(id);
+    //console.log(wishlist);
+    if (wishlist.owner.id !== user.id) {
+      return new ForbiddenException('You cant update others wishlists');
+    }
+    return await this.update(id, updateWishlistDto); // await this.findOne(id);
+  }
+
+  async deleteVerified(id: number, user) {
+    const wishlist = await this.findOneWhithOwner(id);
+    if (wishlist.owner.id !== user.id) {
+      return new ForbiddenException('You cant delete others wishlists');
+    }
+    return await this.remove(id);
   }
 }
