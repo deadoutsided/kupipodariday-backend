@@ -27,10 +27,6 @@ export class Wishlist {
   @Length(1, 250)
   name: string;
 
-  @Column({ default: 'some-wishlist' })
-  @Length(0, 1500)
-  description: string;
-
   @Column()
   @IsUrl()
   image: string;

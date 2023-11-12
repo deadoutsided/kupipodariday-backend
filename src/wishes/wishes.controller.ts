@@ -58,11 +58,11 @@ export class WishesController {
     return this.wishesService.deleteVerified(+id, req.user);
   }
 
-  @UseGuards(JwtGuard)
+  /* @UseGuards(JwtGuard)
   @Get('/shi/:id')
   async findWithOffer(@Param('id') id: string) {
     return this.wishesService.findWithOffers(+id);
-  }
+  } */
 
   @UseGuards(JwtGuard)
   @Post('/:id/copy')

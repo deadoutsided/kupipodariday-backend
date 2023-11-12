@@ -29,6 +29,29 @@ export class WishesService {
     return await this.wishRepository.find(options);
   }
 
+  async findAllUserWishes(id: number) {
+    return await this.wishRepository.find({
+      select: {
+        id: true,
+        price: true,
+        image: true,
+        name: true,
+        raised: true,
+        owner: {
+          id: true,
+        },
+      },
+      relations: {
+        owner: true,
+      },
+      where: {
+        owner: {
+          id,
+        },
+      },
+    });
+  }
+
   async findWithOffers(id: number) {
     return await this.wishRepository.findOne({
       where: {
