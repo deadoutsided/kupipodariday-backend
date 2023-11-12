@@ -13,10 +13,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { FindUserDto } from './dto/find-user.dto';
+import { WishesService } from 'src/wishes/wishes.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private wishesService: WishesService,
+  ) {}
 
   /* @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -44,7 +48,7 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Get('/me/wishes')
   async findSelfWithWishes(@Req() req) {
-    return await this.usersService.findByIdWithWishes(req.user.id);
+    return await this.wishesService.findAllUserWishes(+req.user.id);
   }
 
   @UseGuards(JwtGuard)
