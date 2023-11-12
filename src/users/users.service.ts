@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,10 +19,6 @@ export class UsersService {
     const newUser = await this.userRepository.save(createUserDto);
     return newUser;
   }
-
-  /* findAll() {
-    return `This action returns all users`;
-  } */
 
   async findOneByUsername(username: string) {
     const user = await this.userRepository.findOneBy({
@@ -42,15 +39,14 @@ export class UsersService {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-    console.log(id);
     const updatedUser = await this.userRepository.update({ id }, updateUserDto);
-    const updated = await this.userRepository.findOneBy({ id });
+    const updated = await this.findOneById(id);
     delete updated.password;
     return updated;
   }
 
-  async findUserWithWishes(id: number) {
-    const userWithWishes = await this.userRepository.find({
+  async findByIdWithWishes(id: number) {
+    const userWithWishes = await this.userRepository.findOne({
       where: {
         id,
       },
@@ -61,11 +57,22 @@ export class UsersService {
     return userWithWishes;
   }
 
-  /* update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update({ id }, updateUserDto);
-  } */
+  async findByUsernameWithWishes(username: string) {
+    const userWithWishes = await this.userRepository.findOne({
+      where: {
+        username,
+      },
+      relations: {
+        wishes: true,
+      },
+    });
+    return userWithWishes;
+  }
 
-  /* remove(id: number) {
-    return this.userRepository.remove;
-  } */
+  async findMany(query: string) {
+    //findUserDto: FindUserDto
+    return await this.userRepository.find({
+      where: [{ username: query }, { email: query }],
+    });
+  }
 }

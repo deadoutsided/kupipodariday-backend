@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { ColumnDecimalTransformer } from 'src/transformer/transformer';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Entity()
 export class Wish {
@@ -65,6 +67,9 @@ export class Wish {
   offers: Offer[];
   //@Column()
   //offers: Offer[]; //one to many(one wish can have many offers)
+
+  /* @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
+  wishlist: Wishlist; */
 
   @Column({ type: 'integer', default: 0 })
   copied: number;

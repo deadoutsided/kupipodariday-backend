@@ -6,10 +6,13 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  ManyToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
 
 @Entity()
 export class Wishlist {
@@ -34,10 +37,14 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  @OneToMany(() => Wish, (wish) => wish.id)
-  items: number[];
+  /* @OneToMany(() => Wish, (wish) => wish.id)
+  @JoinColumn()
+  items: Wish[]; */
   //@Column()
   //items: Wish[]; //one to many
+
+  @Column({ type: 'json' })
+  items: WishPartial[];
 
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;

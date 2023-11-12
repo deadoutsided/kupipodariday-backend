@@ -27,12 +27,17 @@ export class WishesController {
     return this.wishesService.create(createWishDto);
   }
 
-  /* TODO: Api dont have path for all, but have for top and last wish
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
-  } */
+  @Get('/last')
+  async getLast() {
+    return await this.wishesService.findLast();
+  }
 
+  @Get('/top')
+  async getTop() {
+    return await this.wishesService.findTop();
+  }
+
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(+id);
@@ -40,21 +45,23 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Patch('/:id')
-  updateById(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.updateById(+id, updateWishDto);
+  async updateById(
+    @Param('id') id: string,
+    @Body() updateWishDto: UpdateWishDto,
+    @Req() req,
+  ) {
+    return this.wishesService.updateByIdVerified(+id, updateWishDto, req.user);
   }
 
   @UseGuards(JwtGuard)
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req) {
-    const wish = await this.wishesService.findOne(+id);
-    if (wish.owner === req.user) return this.wishesService.delete(+id);
-    else return new UnauthorizedException();
+    return this.wishesService.delete(+id, req.user);
   }
 
-  /* TODO: should take user id from jwt token, i guess and copy found wish with his profile data
+  @UseGuards(JwtGuard)
   @Post('/:id/copy')
-  copyWish(@Param('id') id: string){
-    
-  } */
+  async copyWish(@Param('id') id: string, @Req() req) {
+    return await this.wishesService.copy(+id, req.user);
+  }
 }

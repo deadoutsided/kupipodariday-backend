@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
-  BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
@@ -34,7 +34,7 @@ export class AuthController {
     try {
       user = await this.usersService.create(createUserDto);
     } catch (e) {
-      return new BadRequestException('email or username already exists');
+      return new ConflictException('email or username already exists');
     }
     return this.authService.auth(user);
   }
