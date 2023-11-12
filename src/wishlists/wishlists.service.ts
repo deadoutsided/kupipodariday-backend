@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from './entities/wishlist.entity';
 import { WishesService } from 'src/wishes/wishes.service';
-import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()

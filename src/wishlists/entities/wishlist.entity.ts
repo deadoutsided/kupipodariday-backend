@@ -5,14 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
-  JoinColumn,
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Length, IsUrl, IsNumber, IsObject, IsOptional } from 'class-validator';
+import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
-import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()

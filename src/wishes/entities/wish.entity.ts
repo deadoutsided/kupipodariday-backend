@@ -7,7 +7,6 @@ import {
   OneToMany,
   ManyToOne,
   ManyToMany,
-  JoinTable,
 } from 'typeorm';
 import { Length, IsUrl } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';

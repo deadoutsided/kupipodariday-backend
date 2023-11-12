@@ -1,14 +1,5 @@
-import {
-  IsUrl,
-  Length,
-  IsNotEmpty,
-  IsString,
-  IsObject,
-  IsNumber,
-  IsOptional,
-} from 'class-validator';
+import { IsUrl, Length, IsNotEmpty, IsString, IsNumber } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
-import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
 export class CreateWishlistDto {
