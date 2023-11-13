@@ -71,6 +71,17 @@ export class WishesService {
       where: { id },
       relations: { owner: true },
     });
+    delete wish.owner.password;
+    return wish;
+  }
+
+  async findOneWithOwnerAndOffers(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+      relations: { owner: true, offers: true },
+    });
+    delete wish.owner.password;
+    console.log(wish);
     return wish;
   }
 
@@ -104,8 +115,9 @@ export class WishesService {
   async deleteVerified(id: number, user: UserProfileResponseDto) {
     const wish = await this.findOneWithOwner(id);
     if (wish.owner.id === user.id) {
+      const deletedWish = await this.findOne(id);
       await this.delete(id);
-      return await this.findOne(id);
+      return deletedWish;
     } else return new UnauthorizedException();
   }
 

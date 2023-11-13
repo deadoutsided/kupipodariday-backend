@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { WishPartial } from 'src/wishes/dto/wish-partial.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class OffersService {
@@ -16,6 +17,7 @@ export class OffersService {
     @InjectRepository(Offer)
     private offerRepository: Repository<Offer>,
     private wishesService: WishesService,
+    private usersService: UsersService,
   ) {}
   async create(createOfferDto: CreateOfferDto) {
     const newOffer = await this.offerRepository.save(createOfferDto);
@@ -33,22 +35,25 @@ export class OffersService {
   }
 
   async createValid(createOfferDto: CreateOfferDto, user) {
-    const wish = await this.wishesService.findOne(createOfferDto.itemId);
+    const wish = await this.wishesService.findOneWithOwner(
+      createOfferDto.itemId,
+    );
     if (user.id === wish.owner.id) {
-      return new BadRequestException(
-        'Вы не можете скидываться на свой подарок',
-      );
+      throw new BadRequestException('Вы не можете скидываться на свой подарок');
     } else if (
       wish.raised === wish.price ||
       wish.raised + createOfferDto.amount > wish.price
     ) {
-      return new BadRequestException(
+      throw new BadRequestException(
         'Нельзя собрать сумму, большую цены подарка',
       );
     }
     const newWishData: WishPartial = {
       raised: wish.raised + createOfferDto.amount,
     };
+    const ownerOfOffer = this.usersService.findOneByUsername(user.username);
+    createOfferDto.owner = await ownerOfOffer;
+    createOfferDto.item = wish;
     this.wishesService.updateById(createOfferDto.itemId, newWishData);
     return this.create(createOfferDto);
   }
@@ -65,7 +70,7 @@ export class OffersService {
   async findOneExceptHidden(id: number) {
     const offer = await this.findOne(id);
     if (offer.hidden) {
-      return new ForbiddenException('User hided his offer');
+      throw new ForbiddenException('User hided his offer');
     }
     return offer;
   }
