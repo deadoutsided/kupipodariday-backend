@@ -23,12 +23,10 @@ export class Offer {
 
   @Column({ type: 'integer' })
   @IsPositive()
-  user: number; //many to one
+  user: number;
 
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
-  //@Column()
-  //item: Wish; //many to one
 
   @Column({
     type: 'decimal',

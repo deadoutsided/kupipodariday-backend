@@ -56,8 +56,6 @@ export class Wish {
 
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
-  //@Column()
-  //owner: User; //many to one(one user can have more than one wish)
 
   @Column()
   @Length(1, 1024)
@@ -65,11 +63,8 @@ export class Wish {
 
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
-  //@Column()
-  //offers: Offer[]; //one to many(one wish can have many offers)
 
-  @ManyToMany(() => Wishlist, (wishlist) => wishlist.itemsId)
-  //@JoinTable()
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
   wishlists: Wishlist[];
 
   @Column({ type: 'integer', default: 0 })

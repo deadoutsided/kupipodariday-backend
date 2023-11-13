@@ -28,7 +28,6 @@ export class AuthService {
       return result;
     }
 
-    //throw new UnauthorizedException();
     return null;
   }
 }

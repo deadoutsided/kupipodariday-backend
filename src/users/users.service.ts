@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,10 +31,29 @@ export class UsersService {
     return user;
   }
 
-  async updateById(
-    id: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserProfileResponseDto> {
+  async updateById(id: number, updateUserDto: UpdateUserDto, user) {
+    console.log(updateUserDto);
+    if (updateUserDto.username || updateUserDto.email) {
+      const usernameMayExist = updateUserDto.username
+        ? await this.userRepository.findOne({
+            where: { username: updateUserDto.username },
+          })
+        : false;
+      const emailMayExist = updateUserDto.email
+        ? await this.userRepository.findOne({
+            where: { email: updateUserDto.email },
+          })
+        : false;
+      console.log(user);
+      if (
+        (usernameMayExist && usernameMayExist.id !== user.id) ||
+        (emailMayExist && emailMayExist?.id !== user.id)
+      ) {
+        throw new BadRequestException(
+          'User with this username or email already exist',
+        ).getResponse();
+      }
+    }
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
@@ -70,7 +88,6 @@ export class UsersService {
   }
 
   async findMany(query: string) {
-    //findUserDto: FindUserDto
     return await this.userRepository.find({
       where: [{ username: query }, { email: query }],
     });

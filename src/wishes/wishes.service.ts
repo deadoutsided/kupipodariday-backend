@@ -16,8 +16,6 @@ export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private wishRepository: Repository<Wish>,
-    /* @InjectRepository(User)
-    private userRepository: Repository<User>, */
     private usersService: UsersService,
   ) {}
   async create(createWishDto: CreateWishDto) {
@@ -96,7 +94,6 @@ export class WishesService {
       await this.updateById(id, updateWishDto);
       return this.findOne(id);
     }
-    //const updatedWish = await this.wishRepository.update({ id }, updateWishDto);
     return new UnauthorizedException();
   }
 
@@ -106,13 +103,10 @@ export class WishesService {
 
   async deleteVerified(id: number, user: UserProfileResponseDto) {
     const wish = await this.findOneWithOwner(id);
-    //console.log(wish);
     if (wish.owner.id === user.id) {
       await this.delete(id);
       return await this.findOne(id);
     } else return new UnauthorizedException();
-    //const deletedWish = await this.wishRepository.delete(id);
-    //return deletedWish;
   }
 
   async copy(id: number, user: UserProfileResponseDto) {
@@ -124,7 +118,7 @@ export class WishesService {
       image: copyingWish.image,
       price: copyingWish.price,
       description: copyingWish.description,
-      owner: copyingUser, //as i understand, here i should inject usersRepository and find copyind user to place him here
+      owner: copyingUser,
     };
 
     return this.create(copied);
