@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { IsPositive } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { ColumnDecimalTransformer } from 'src/transformer/transformer';
 import { User } from 'src/users/entities/user.entity';

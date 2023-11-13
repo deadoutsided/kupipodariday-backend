@@ -81,7 +81,6 @@ export class WishesService {
       relations: { owner: true, offers: true },
     });
     delete wish.owner.password;
-    console.log(wish);
     return wish;
   }
 
@@ -132,6 +131,8 @@ export class WishesService {
       description: copyingWish.description,
       owner: copyingUser,
     };
+    copyingWish.copied += 1;
+    this.wishRepository.save(copyingWish);
 
     return this.create(copied);
   }
