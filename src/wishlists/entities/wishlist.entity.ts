@@ -33,17 +33,8 @@ export class Wishlist {
 
   @ManyToMany(() => Wish, (wish) => wish.wishlists)
   @JoinTable()
-  itemsId: Wish[];
-  //@Column()
-  //items: Wish[]; //one to many
-
-  /* @IsOptional()
-  @Column({ type: 'json' })
-  @IsObject({ each: true })
-  items: WishPartial[]; */
+  items: Wish[];
 
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
-  //@Column()
-  //owner: User; //many to one
 }

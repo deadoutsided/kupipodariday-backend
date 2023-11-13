@@ -17,25 +17,16 @@ export class WishlistsService {
   ) {}
 
   async create(createWishlistDto: CreateWishlistDto, user) {
-    /* const wishesIds = createWishlistDto.itemsId.map((wishId) => {
+    createWishlistDto.owner = await this.usersService.findOneById(user.id);
+    const wishesIds = createWishlistDto.itemsId.map((wishId) => {
       return { id: wishId };
     });
     createWishlistDto.items = await this.wishService.findAll({
       where: wishesIds,
     });
-    console.log(createWishlistDto.items);
-    delete createWishlistDto.itemsId; */
-    createWishlistDto.owner = await this.usersService.findOneById(user.id);
-    const wishesIds = createWishlistDto.items.map((wishId) => {
-      return { id: wishId };
-    });
-    createWishlistDto.itemsId = await this.wishService.findAll({
-      where: wishesIds,
-    });
     const newWishlist = await this.wishlistRepository.save(
       createWishlistDto as any,
     );
-    //return await this.wishlistRepository.find();
     return newWishlist;
   }
 
@@ -66,12 +57,30 @@ export class WishlistsService {
     return wishlist;
   }
 
+  async findOneWithWishes(id: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      select: {
+        owner: {
+          id: true,
+        },
+      },
+      where: {
+        id,
+      },
+      relations: {
+        items: true,
+        owner: true,
+      },
+    });
+    return wishlist;
+  }
+
   async update(id: number, updateWishlistDto: UpdateWishlistDto) {
     if (updateWishlistDto.items) {
-      const wishesIds = updateWishlistDto.items.map((wishId) => {
+      const wishesIds = updateWishlistDto.itemsId.map((wishId) => {
         return { id: wishId };
       });
-      updateWishlistDto.itemsId = await this.wishService.findAll({
+      updateWishlistDto.items = await this.wishService.findAll({
         where: wishesIds,
       });
       console.log(updateWishlistDto.items);
@@ -104,11 +113,11 @@ export class WishlistsService {
 
   async updateVerified(id: number, updateWishlistDto: UpdateWishlistDto, user) {
     const wishlist = await this.findOneWhithOwner(id);
-    //console.log(wishlist);
     if (wishlist.owner.id !== user.id) {
       return new ForbiddenException('You cant update others wishlists');
     }
-    return await this.update(id, updateWishlistDto); // await this.findOne(id);
+    await this.update(id, updateWishlistDto);
+    return await this.findOne(id);
   }
 
   async deleteVerified(id: number, user) {

@@ -55,16 +55,9 @@ export class User {
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
-  //@Column()
-  //wishes: Wish[]; //one to many
-
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
-  //@Column()
-  //offers: Offer[]; //one to many
 
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
-  //@Column()
-  //wishlists: Wishlist[]; //one to many
 }

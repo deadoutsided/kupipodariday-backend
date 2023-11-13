@@ -21,7 +21,6 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Post()
   create(@Body() createWishDto: CreateWishDto, @Req() req) {
-    //console.log(req.user);
     createWishDto.owner = req.user;
     return this.wishesService.create(createWishDto);
   }
@@ -57,12 +56,6 @@ export class WishesController {
   async remove(@Param('id') id: string, @Req() req) {
     return this.wishesService.deleteVerified(+id, req.user);
   }
-
-  /* @UseGuards(JwtGuard)
-  @Get('/shi/:id')
-  async findWithOffer(@Param('id') id: string) {
-    return this.wishesService.findWithOffers(+id);
-  } */
 
   @UseGuards(JwtGuard)
   @Post('/:id/copy')

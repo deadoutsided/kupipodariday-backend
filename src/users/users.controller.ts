@@ -22,11 +22,6 @@ export class UsersController {
     private wishesService: WishesService,
   ) {}
 
-  /* @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  } */
-
   @UseGuards(JwtGuard)
   @Get('/me')
   findSelf(@Req() req): UserProfileResponseDto {
@@ -36,14 +31,12 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Patch('/me')
   async updateSelf(@Req() req, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.updateById(req.user.id, updateUserDto);
+    return await this.usersService.updateById(
+      req.user.id,
+      updateUserDto,
+      req.user,
+    );
   }
-
-  /* @UseGuards(JwtGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOneById(+id);
-  } */
 
   @UseGuards(JwtGuard)
   @Get('/me/wishes')

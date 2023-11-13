@@ -14,7 +14,7 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
@@ -24,7 +24,6 @@ export class WishlistsController {
     return this.wishlistsService.create(createWishlistDto, req.user);
   }
 
-  //@UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.wishlistsService.findAllWithOwners();
@@ -33,7 +32,7 @@ export class WishlistsController {
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
+    return this.wishlistsService.findOneWithWishes(+id);
   }
 
   @UseGuards(JwtGuard)
