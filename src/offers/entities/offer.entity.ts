@@ -9,6 +9,7 @@ import {
 import { IsPositive } from 'class-validator';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { ColumnDecimalTransformer } from 'src/transformer/transformer';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Offer {
@@ -21,9 +22,8 @@ export class Offer {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'integer' })
-  @IsPositive()
-  user: number;
+  @ManyToOne(() => User, (user) => user.offers)
+  owner: User;
 
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
